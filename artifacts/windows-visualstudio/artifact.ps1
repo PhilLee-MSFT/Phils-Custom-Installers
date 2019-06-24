@@ -168,6 +168,7 @@ try
                 "--add Microsoft.VisualStudio.Workload.NativeDesktop",
                 "--add Microsoft.VisualStudio.Workload.NetCoreTools",
                 "--add Microsoft.VisualStudio.Workload.NetWeb"
+                "--IncludeRecommended"
             )
 
             # Enterprise (includes all Professional modules)
