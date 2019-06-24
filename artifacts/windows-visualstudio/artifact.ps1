@@ -11,10 +11,13 @@ Param(
     [string] $installerArgs
 )
 
+
 ###################################################################################################
 #
 # PowerShell configurations
 #
+
+Set-StrictMode -Version 2.0
 
 # NOTE: Because the $ErrorActionPreference is "Stop", this script will stop on first failure.
 #       This is necessary to ensure we capture errors inside the try-catch-finally block.
@@ -155,7 +158,7 @@ try
             "--wait"
         )
 
-        if ($installerArgsList.Count == 0)
+        if (-not $installerArgsList)
         {
             # Professional
             $ProfessionalModulesArgsList = @(
