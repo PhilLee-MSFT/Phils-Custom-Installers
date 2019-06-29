@@ -22,5 +22,9 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 #
 # Main execution block.
 #
-Uninstall-AzureRm
-Install-Module -Name Az -AllowClobber
+try {
+    Uninstall-AzureRm
+}
+finally {
+    Install-Module -Name Az -AllowClobber
+}   
