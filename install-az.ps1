@@ -25,6 +25,16 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 try {
     Uninstall-AzureRm
 }
+# Might have a CommandNotFound if AzureRM is not installed...
+catch [System.Management.Automation.CommandNotFoundException] {
+    Write-Host "Caught CommandNotFound."
+}
+catch {
+    $errorstring = $Error[0].Exception.Message
+    Write-Host "Error:  $errorstring"
+}
 finally {
-    Install-Module -Name Az -AllowClobber
-}   
+    Write-Host "Installing NuGet and Az..."
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    Install-Module -Name Az -AllowClobber -Force
+}
