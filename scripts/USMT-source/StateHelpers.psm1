@@ -141,8 +141,9 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         {
             # https://blogs.technet.microsoft.com/deploymentguys/2016/03/07/windows-10-start-layout-customization/
             if (test-path $filepath) {
+                set-location "$env:systemdrive\\"
                 Write-Host "  Calling Import-StartLayout (filepath:  $filepath)"
-                Import-StartLayout -LayoutPath $filepath -MountPath %systemdrive%
+                Import-StartLayout -LayoutPath $filepath -MountPath "$env:systemdrive\\"
                 Write-Host "  ... completed."
             }
             else {
