@@ -7,51 +7,44 @@ param
 
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$SettingsFilePath
+    [String]$settingsFilename
 )
 
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = "Stop"
 
-Import-Module ".\StateHelpers.psm1" -Force
-
-try {
-    Push-Location $PSScriptRoot
-    $usmtPath = "C:\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\User State Migration Tool\\amd64"
-    $cmdLine = "loadstate.exe"
-    if (Test-Path -Path (Join-Path -Path $usmtPath -ChildPath $cmdLine)) {
-        Write-Host "  USMT installed..."
+################################################
+function Test-Params($StatePath, $SettingsFilePath)
+{
+    # test the incoming paths...
+    if (Test-Path -Path $StatePath)
+    {
+        Write-Host "  State file exists - $StatePath"
     }
-    else {
-        Write-Host "  Installing USMT..."
-        Install-USMT
+    else
+    {
+        Write-Error "  State file not found ($StatePath)" -ForegroundColor Red
+        exit (-1)
     }
-    
-    # set the path once we know the toolkit is installed...
-    Set-Location $usmtPath
-
-    $logFilename = "load.log"
-    $logFilePath = Join-Path -path $StatePath -ChildPath $logFilename
-    $args = @($StatePath, "/i:$SettingsFilePath", "/v:5", "/l:$logFilePath", "/c")
-    Write-Host "  Calling scanstate...  Args:  $args"
-    $exitCode = Start-Process -FilePath $cmdLine -ArgumentList $args -PassThru -Wait
-    Write-Host "  ... completed (exit code:  {0})", $exitCode
-
-
-<#     $layoutPath = "userStartLayout.xml"
-    $filepath = Join-Path -path $StatePath -ChildPath $layoutPath
-    if (test-path $filepath) {
-        Write-Host "  Calling Import-StartLayout (filepath:  $filepath)"
-        Import-StartLayout -Path $filepath
-        Write-Host "  ... completed."
+    if (Test-Path -Path $SettingsFilePath)
+    {
+        Write-Host "  Settings file exists - $SettingsFilePath"
     }
-    else {
-        Write-host "  export file DNE:  $filepath"
+    else
+    {
+        Write-Error "  Settings file does not exist - $SettingsFilePath" -ForegroundColor Red
+        exit (-1)
     }
- #>
-
 }
-finally {
-    Pop-Location
-}
+
+################################################
+
+$scriptroot = $PSScriptRoot
+$modroot = Join-Path -Path $scriptroot -ChildPath "StateHelpers.psm1"
+Import-Module $modroot -Force
+
+$settingsFilePath = Join-Path -Path $scriptroot -ChildPath $settingsFilename
+Test-Params -StatePath $StatePath -SettingsFilePath $settingsFilePath
+
+Control-State -Action "load" -StatePath $StatePath -SettingsFilePath $settingsFilePath

@@ -3,57 +3,48 @@ param
 (
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$OutPath,
+    [String]$StatePath,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$SettingsFilePath
+    [String]$settingsFilename
 )
 
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = "Stop"
 
-try {
-    
-    Import-Module ".\StateHelpers.psm1" -Force
-
-    Push-Location $PSScriptRoot
-    $usmtPath = "C:\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\User State Migration Tool\\amd64"
-    $cmdLine = "loadstate.exe"
-    if (Test-Path -Path (Join-Path -Path $usmtPath -ChildPath $cmdLine)) {
-        Write-Host "  USMT installed..."
+################################################
+function Test-Params($StatePath, $SettingsFilePath)
+{
+    # test the incoming paths...
+    if (Test-Path -Path $StatePath)
+    {
+        Write-Host "  StatePath exists - $StatePath"
     }
-    else {
-        Write-Host "  Installing USMT..."
-        Install-USMT
+    else
+    {
+        Write-Host "  StatePath DNE - $StatePath.  Creating... " -ForegroundColor Yellow
+        New-Item -Path $StatePath -ItemType Directory
     }
-
-    # set the path once we know the toolkit is installed...
-    Set-Location $usmtPath
-
-    $cmdLine = "scanstate.exe"
-    $logFilename = "scan.log"
-    $logFilePath = Join-Path -path $OutPath -ChildPath $logFilename
-    $args = @($OutPath, "/i:$SettingsFilePath", "/l:$logFilePath", "/v:5 /c")
-    Write-Host "  Calling scanstate...  Args:  $args"
-    $starttime = Get-Date
-    $exitCode = Start-Process -FilePath $cmdLine -ArgumentList $args -PassThru -Wait
-    $endtime = Get-Date
-    $span = New-TimeSpan -Start $starttime -End $endtime
-    Write-Host "  ... completed (exit code:  {0})", $exitCode
-
-    <# 
-    # https://docs.microsoft.com/en-us/windows/configuration/configure-windows-10-taskbar
-    $layoutPath = "userStartLayout.xml"
-    $filepath = Join-Path -path $OutPath -ChildPath $layoutPath
-    Write-Host "  Calling Export-StartLayout (filepath:  $filepath)"
-    Export-StartLayout -Path $filepath
-    Write-Host "  ... completed."
-    #>
-
+    if (Test-Path -Path $SettingsFilePath)
+    {
+        Write-Host "  Settings file exists - $SettingsFilePath"
+    }
+    else
+    {
+        Write-Host "  Settings file does not exist - $SettingsFilePath" -ForegroundColor Red
+        exit (-1)
+    }
 }
-finally {
-    Write-Host "  Elapsed time:  {0}", $span
-    Pop-Location
-}
+
+################################################
+
+$scriptroot = $PSScriptRoot
+$modroot = Join-Path -Path $scriptroot -ChildPath "StateHelpers.psm1"
+Import-Module $modroot -Force
+
+$settingsFilePath = Join-Path -Path $scriptroot -ChildPath $settingsFilename
+Test-Params -StatePath $StatePath -SettingsFilePath $settingsFilePath
+
+Control-State -Action "scan" -StatePath $StatePath -SettingsFilePath $settingsFilePath
