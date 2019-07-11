@@ -21,6 +21,12 @@ function Test-Params($StatePath, $SettingsFilePath)
     if (Test-Path -Path $StatePath)
     {
         Write-Host "  StatePath exists - $StatePath"
+        if (Test-Path -Path "$StatePath\USMT")
+        {
+            Write-Host "  Found existing machine state!  Renaming..."
+            $newName =  "$StatePath\USMT" + (Get-Date -Format "-mss")
+            Rename-Item -Path "$StatePath\USMT" -NewName $newName -Force
+        }
     }
     else
     {
