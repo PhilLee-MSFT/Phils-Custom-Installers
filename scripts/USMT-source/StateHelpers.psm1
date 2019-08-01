@@ -127,6 +127,7 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
             Write-Host "  USMT completed" -ForegroundColor Green
         }
 
+<#      # Haven't figured out how to get the "current user's" start layout when running from automation scripts...
         # for later...
         $layoutPath = "userStartLayout.xml"
         $filepath = Join-Path -path $StatePath -ChildPath $layoutPath
@@ -150,6 +151,8 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
                 Write-Host "  export file DNE:  $filepath" -ForegroundColor Red
             }
         }
+ #>
+ 
     }
     finally
     {

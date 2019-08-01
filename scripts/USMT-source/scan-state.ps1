@@ -40,13 +40,14 @@ function Test-Params($StatePath, $SettingsFilePath)
     else
     {
         Write-Host "  Settings file does not exist - $SettingsFilePath" -ForegroundColor Red
-        exit (-1)
+        exit (22)
     }
 }
 
 ################################################
 
-$scriptroot = $PSScriptRoot
+$scriptdrive = Split-Path -Path $StatePath -Qualifier
+$scriptroot = Join-Path -Path $scriptdrive -ChildPath "Phils-Custom-Installers\scripts\USMT-source"
 $modroot = Join-Path -Path $scriptroot -ChildPath "StateHelpers.psm1"
 Import-Module $modroot -Force
 
