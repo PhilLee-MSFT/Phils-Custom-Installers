@@ -112,7 +112,7 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         {
             $cmdLine = "loadstate.exe"
             $logFilePath = Join-Path -Path $StatePath -ChildPath "load.log"
-            $args = @($StatePath, "/i:$settingsFilename", "/v:5 /c", "/l:$logFilePath")
+            $args = @($StatePath, "/i:$settingsFilename", "/v:5 /lac", "/l:$logFilePath")
             Write-Host "  Calling loadstate...  Args:  $args"
         }
 
@@ -120,7 +120,7 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         $retCode = Start-Process -FilePath $cmdLine -ArgumentList $args -PassThru -Wait
         if ($retCode.ExitCode -ne 0)
         {
-            throw "Product installation of $localFile failed with exit code: $($retCode.ExitCode.ToString())"    
+            throw "cmdline: $cmdLine failed with exit code: $($retCode.ExitCode.ToString())"    
         }
         else
         {

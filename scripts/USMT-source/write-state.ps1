@@ -40,7 +40,8 @@ function Test-Params($StatePath, $SettingsFilePath)
 
 ################################################
 
-$scriptroot = $PSScriptRoot
+$scriptdrive = Split-Path -Path $StatePath -Qualifier
+$scriptroot = Join-Path -Path $scriptdrive -ChildPath "Phils-Custom-Installers\scripts\USMT-source"
 $modroot = Join-Path -Path $scriptroot -ChildPath "StateHelpers.psm1"
 Import-Module $modroot -Force
 
