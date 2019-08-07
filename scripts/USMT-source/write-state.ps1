@@ -3,10 +3,6 @@ param
 (
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$StatePath,
-
-    [Parameter(Mandatory=$true)]
-    [ValidateNotNullOrEmpty()]
     [String]$settingsFilename
 )
 
@@ -24,8 +20,7 @@ function Test-Params($StatePath, $SettingsFilePath)
     }
     else
     {
-        Write-Error "  State file not found ($StatePath)" -ForegroundColor Red
-        exit (-1)
+        Throw "State file not found ($StatePath)"
     }
     if (Test-Path -Path $SettingsFilePath)
     {
@@ -33,14 +28,27 @@ function Test-Params($StatePath, $SettingsFilePath)
     }
     else
     {
-        Write-Error "  Settings file does not exist - $SettingsFilePath" -ForegroundColor Red
-        exit (-1)
+        Throw "Settings file does not exist - $SettingsFilePath"
     }
 }
 
+
+function Get-DriveLetter_Private()
+{
+    # get the data disk's drive letter...
+    $diskpart = Get-Partition
+    $datadrive = $diskpart | Where-Object { $_.DriveLetter -eq 'e' }
+    if ($null -eq $datadrive) {
+        $datadrive = $diskpart | Where-Object { $_.DriveLetter -eq 'f' }
+    }
+    return ($datadrive.DriveLetter +':')
+}
+
+
 ################################################
 
-$scriptdrive = Split-Path -Path $StatePath -Qualifier
+$scriptdrive = Get-DriveLetter_Private
+$StatePath = Join-Path -Path $scriptdrive -ChildPath "state"
 $scriptroot = Join-Path -Path $scriptdrive -ChildPath "Phils-Custom-Installers\scripts\USMT-source"
 $modroot = Join-Path -Path $scriptroot -ChildPath "StateHelpers.psm1"
 Import-Module $modroot -Force

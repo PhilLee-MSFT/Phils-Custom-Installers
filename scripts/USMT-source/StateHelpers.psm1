@@ -54,7 +54,6 @@ function DownloadToFilePath ($downloadUrl, $targetFile)
     }
 }
 
-
 function Install-USMT
 {
     $usmtPath = "C:\\Program Files (x86)\\Windows Kits\\10\\Assessment and Deployment Kit\\User State Migration Tool\\amd64"
@@ -105,14 +104,14 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         {
             $cmdLine = "scanstate.exe"
             $logFilePath = Join-Path -path $StatePath -ChildPath "scan.log"
-            $args = @($StatePath, "/i:$settingsFileName", "/v:5 /c", "/l:$logFilePath")
+            $args = @($StatePath, "/i:$settingsFileName", "/i:migapp.xml /v:5 /c", "/l:$logFilePath")
             Write-Host "  Calling scanstate...  Args:  $args"
         }
         else # Action == load...
         {
             $cmdLine = "loadstate.exe"
             $logFilePath = Join-Path -Path $StatePath -ChildPath "load.log"
-            $args = @($StatePath, "/i:$settingsFilename", "/v:5 /lac", "/l:$logFilePath")
+            $args = @($StatePath, "/i:$settingsFilename", "/i:migapp.xml /v:5 /c /lac /lae", "/l:$logFilePath")
             Write-Host "  Calling loadstate...  Args:  $args"
         }
 
@@ -127,7 +126,7 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
             Write-Host "  USMT completed" -ForegroundColor Green
         }
 
-<#      # Haven't figured out how to get the "current user's" start layout when running from automation scripts...
+<#      # Haven't figured out how to get the "current user's" start layout when running from SP automation scripts...
         # for later...
         $layoutPath = "userStartLayout.xml"
         $filepath = Join-Path -path $StatePath -ChildPath $layoutPath
