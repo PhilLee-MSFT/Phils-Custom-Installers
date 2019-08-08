@@ -7,6 +7,33 @@
     <role role="Data">
       <rules>
 
+        <!--   Example:
+        <exclude>
+          <objectSet>
+            <pattern type="File">%CSIDL_COMMON_VIDEO%\* [*]</pattern>
+          </objectSet>
+        </exclude>
+        -->
+        
+        <!--
+          Don't include files from any other drive...
+        <unconditionalExclude>
+          <objectSet>
+            <pattern type="File">d:\*[*]</pattern>
+          </objectSet>
+        </unconditionalExclude>
+        <unconditionalExclude>
+          <objectSet>
+            <pattern type="File">e:\*[*]</pattern>
+          </objectSet>
+        </unconditionalExclude>
+        <unconditionalExclude>
+          <objectSet>
+            <pattern type="File">f:\*[*]</pattern>
+          </objectSet>
+        </unconditionalExclude>
+        -->
+        
         <!--
           GenerateDocPatterns takes 3 arguments
           1. generate patterns for scattered files inside %ProgramFiles%
@@ -25,13 +52,15 @@
           </objectSet>
         </exclude>
 
-        <!--   Example:
+        <!--
+          Don't mess with the Windows Defender files.  Causes many
+          access denied errors on load...
+        -->
         <exclude>
           <objectSet>
-            <pattern type="File">%CSIDL_COMMON_VIDEO%\* [*]</pattern>
+            <pattern type="File">%PROGRAMFILES(x86)%\Windows Defender\* [*]</pattern>
           </objectSet>
         </exclude>
-        -->
 
         <contentModify script="MigXmlHelper.MergeShellLibraries('TRUE','TRUE')">
           <objectSet>
@@ -52,6 +81,15 @@
     <displayName>MigDocUser</displayName>
     <role role="Data">
       <rules>
+
+        <!--   Example:
+        <exclude>
+          <objectSet>
+            <pattern type="File">%CSIDL_MYVIDEO%\* [*]</pattern>
+          </objectSet>
+        </exclude>
+        -->
+
         <include filter='MigXmlHelper.IgnoreIrrelevantLinks()'>
           <objectSet>
             <script>MigXmlHelper.GenerateDocPatterns ("FALSE","TRUE","FALSE")</script>
@@ -68,14 +106,6 @@
             <script>MigXmlHelper.GenerateDocPatterns ("FALSE","FALSE","FALSE")</script>
           </objectSet>
         </exclude>
-
-        <!--   Example:
-        <exclude>
-          <objectSet>
-            <pattern type="File">%CSIDL_MYVIDEO%\* [*]</pattern>
-          </objectSet>
-        </exclude>
-        -->
 
         <contentModify script="MigXmlHelper.MergeShellLibraries('TRUE','TRUE')">
           <objectSet>

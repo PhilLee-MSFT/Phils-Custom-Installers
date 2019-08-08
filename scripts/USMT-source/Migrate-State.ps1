@@ -78,7 +78,7 @@ $destVM = Get-AzVM -Name $DestinationVMName
 #
 # 7.  Attach the transfer disk to the destination VM.
 #
-Write-Host " Attach the transfer disk to the VM"
+Write-Host " Attach the transfer disk to the destination VM"
 Add-AzVMDataDisk -VM $destVM -Name $datadisk.Name -CreateOption Attach -ManagedDiskId $datadisk.Id -Lun 1
 Update-AzVM -ResourceGroupName $destVM.ResourceGroupName -VM $destVM
 
@@ -94,17 +94,16 @@ Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM
 Write-Host " Run the USMT on the destination VM."
 $params = @{settingsFilename = "MigDocs-custom.xml"}
 $scriptpath = ".\write-state.ps1"
-try {
-    Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
-}
-finally {
-    #
-    # 9.  Detach the disk from the destination VM.
-    #
-    Write-Host " Detach the disk from the destination VM."
-    Remove-AzVMDataDisk -VM $destVM -DataDiskNames $datadisk.Name
-    Update-AzVM -ResourceGroupName $destVM.ResourceGroupName -VM $destVM
-}
+Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
+
+#
+# 9.  Detach the disk from the destination VM.
+#
+Write-Host " Detach the disk from the destination VM."
+Remove-AzVMDataDisk -VM $destVM -DataDiskNames $datadisk.Name
+Update-AzVM -ResourceGroupName $destVM.ResourceGroupName -VM $destVM
+
 
 Write-Host
 Write-Host " All done." -ForegroundColor Green
+Write-Host

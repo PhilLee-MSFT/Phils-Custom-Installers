@@ -14,7 +14,7 @@ param
 
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$SourceVMName
+    [String]$VMName
 )
 
 
@@ -33,17 +33,19 @@ Write-Host " Getting the data disk"
 $datadisk = Get-AzDisk -ResourceGroupName $DiskRGName -DiskName $DatadiskName
 
 #
-# 2.  Get the source VM.  Make sure it's in a running state...
+# 2.  Get the VM.  Make sure it's in a running state...
 #
-Write-Host " Getting the source VM"
-$sourceVM = Get-AzVM -Name $SourceVMName
+Write-Host " Getting the VM"
+$vm = Get-AzVM -Name $VMName
 
 #
-# 3.  Detach the disk from the source VM.
+# 3.  Detach the disk from the VM.
 #
-Write-Host "Detach the disk from the source VM."
-Remove-AzVMDataDisk -VM $sourceVM -DataDiskNames $datadisk.Name
-Update-AzVM -ResourceGroupName $sourceVM.ResourceGroupName -VM $sourceVM
+Write-Host "Detach the disk from the VM."
+Remove-AzVMDataDisk -VM $vm -DataDiskNames $datadisk.Name
+Update-AzVM -ResourceGroupName $vm.ResourceGroupName -VM $vm
 
 
+Write-Host
 Write-Host " All done." -ForegroundColor Green
+Write-Host
