@@ -61,6 +61,26 @@
             <pattern type="File">%PROGRAMFILES(x86)%\Windows Defender\* [*]</pattern>
           </objectSet>
         </exclude>
+        <exclude>
+          <objectSet>
+            <pattern type="File">%PROGRAMFILES%\Windows Defender\* [*]</pattern>
+          </objectSet>
+        </exclude>
+        <exclude>
+          <objectSet>
+            <pattern type="File">c:\ProgramData\Microsoft\Windows Defender\* [*]</pattern>
+          </objectSet>
+        </exclude>
+        <exclude>
+          <objectSet>
+            <pattern type="File">%CSIDL_COMMON_APPDATA%\Microsoft\Windows Defender\* [*]</pattern>
+          </objectSet>
+        </exclude>
+        <exclude>
+          <objectSet>
+            <pattern type="File">%PROGRAMFILES%\Windows Defender Advanced Threat Protection\* [*]</pattern>
+          </objectSet>
+        </exclude>
 
         <contentModify script="MigXmlHelper.MergeShellLibraries('TRUE','TRUE')">
           <objectSet>

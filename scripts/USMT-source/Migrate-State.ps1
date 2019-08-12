@@ -18,7 +18,10 @@ param
 
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [String]$DestinationVMName
+    [String]$DestinationVMName,
+
+    [Parameter(Mandatory=$false)]
+    [String]$RunTest = $false
 )
 
 Set-StrictMode -Version Latest
@@ -42,23 +45,24 @@ Write-Host " Getting the source VM"
 $sourceVM = Get-AzVM -Name $SourceVMName 
 
 #
-# 3.  Attach the transfer disk to the VM.
+# 3.  Attach the transfer disk to the source VM.
 #
-Write-Host " Attach the transfer disk to the VM"
+Write-Host " Attach the transfer disk to the source VM"
 Add-AzVMDataDisk -VM $sourceVM -Name $datadisk.Name -CreateOption Attach -ManagedDiskId $datadisk.Id -Lun 1
 Update-AzVM -ResourceGroupName $sourceVM.ResourceGroupName -VM $sourceVM
 
 #
 # 4.  Run the USMT on the source VM - the script is on the datadisk...
 #
-Write-Host " Run test script on the VM."
-$filename = "Hello-" + (Get-Date -Format dss) + ".txt"
-$params = @{Filename = $filename}
-$scriptpath = ".\New-File.ps1"
-Invoke-AzVMRunCommand -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
-
+if ($RunTest -eq $true) {
+    Write-Host " Run test script on the source VM."
+    $filename = "Hello-" + (Get-Date -Format dss) + ".txt"
+    $params = @{Filename = $filename}
+    $scriptpath = ".\New-File.ps1"
+    Invoke-AzVMRunCommand -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
+}
 Write-Host " Run the USMT on the source VM."
-$params = @{settingsFilename = "MigDocs-custom.xml"}
+$params = @{settingsFilename = "config.xml"}
 $scriptpath = ".\scan-state.ps1"
 Invoke-AzVMRunCommand -ResourceGroupName $sourceVM.ResourceGroupName -Name $sourceVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
 
@@ -85,14 +89,16 @@ Update-AzVM -ResourceGroupName $destVM.ResourceGroupName -VM $destVM
 #
 # 8.  Write the state on the destination VM.
 #
-Write-Host " Run test script on the VM."
-$filename = "Hello-" + (Get-Date -Format dss) + ".txt"
-$params = @{Filename = $filename}
-$scriptpath = ".\New-File.ps1"
-Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
+if ($RunTest -eq $true) {
+    Write-Host " Run test script on the destination VM."
+    $filename = "Hello-" + (Get-Date -Format dss) + ".txt"
+    $params = @{Filename = $filename}
+    $scriptpath = ".\New-File.ps1"
+    Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
+}
 
 Write-Host " Run the USMT on the destination VM."
-$params = @{settingsFilename = "MigDocs-custom.xml"}
+$params = @{settingsFilename = "config.xml"}
 $scriptpath = ".\write-state.ps1"
 Invoke-AzVMRunCommand -ResourceGroupName $destVM.ResourceGroupName -Name $destVM.Name -CommandId 'RunPowerShellScript' -ScriptPath $scriptpath -Parameter $params
 

@@ -104,14 +104,14 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         {
             $cmdLine = "scanstate.exe"
             $logFilePath = Join-Path -path $StatePath -ChildPath "scan.log"
-            $args = @($StatePath, "/i:$settingsFileName", "/i:migapp.xml /v:5 /c", "/l:$logFilePath")
+            $args = @($StatePath, "/config:$settingsFileName", "/i:migdocs.xml /i:migapp.xml /v:5 /c", "/l:$logFilePath")
             Write-Host "  Calling scanstate...  Args:  $args"
         }
         else # Action == load...
         {
             $cmdLine = "loadstate.exe"
             $logFilePath = Join-Path -Path $StatePath -ChildPath "load.log"
-            $args = @($StatePath, "/i:$settingsFilename", "/i:migapp.xml /v:5 /c /lac /lae", "/l:$logFilePath")
+            $args = @($StatePath, "/config:$settingsFilename", "/i:migdocs.xml /i:migapp.xml /v:5 /c /lac /lae", "/l:$logFilePath")
             Write-Host "  Calling loadstate...  Args:  $args"
         }
 
