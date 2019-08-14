@@ -69,6 +69,8 @@ function Get-VmPassword_Private
 
     return $password
 }
+
+
 ###################################################################################################
 #
 # Main execution block.
