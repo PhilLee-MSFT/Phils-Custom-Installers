@@ -111,7 +111,7 @@ function Control-State($Action, $StatePath, $SettingsFilePath)
         {
             $cmdLine = "loadstate.exe"
             $logFilePath = Join-Path -Path $StatePath -ChildPath "load.log"
-            $args = @($StatePath, "/config:$settingsFilename", "/i:migdocs.xml /i:migapp.xml /v:5 /c", "/l:$logFilePath")
+            $args = @($StatePath, "/config:$settingsFilename", "/i:migdocs.xml /i:migapp.xml /lae /lac /v:5 /c", "/l:$logFilePath")
             Write-Host "  Calling loadstate...  Args:  $args"
         }
 
